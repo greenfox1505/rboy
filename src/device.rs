@@ -8,6 +8,7 @@ use crate::StrResult;
 
 pub struct Device {
     cpu: CPU<'static>,
+    owed_cycles: i32,
 }
 
 fn stdoutprinter(v: u8) -> Option<u8> {
@@ -22,22 +23,29 @@ fn stdoutprinter(v: u8) -> Option<u8> {
 impl Device {
     pub fn new(romname: &str, skip_checksum: bool) -> StrResult<Device> {
         let cart = mbc::FileBackedMBC::new(romname.into(), skip_checksum)?;
-        CPU::new(Box::new(cart), None).map(|cpu| Device { cpu: cpu })
+        CPU::new(Box::new(cart), None).map(|cpu| Device { cpu: cpu , owed_cycles: 0 })
     }
 
     pub fn new_cgb(romname: &str, skip_checksum: bool) -> StrResult<Device> {
         let cart = mbc::FileBackedMBC::new(romname.into(), skip_checksum)?;
-        CPU::new_cgb(Box::new(cart), None).map(|cpu| Device { cpu: cpu })
+        CPU::new_cgb(Box::new(cart), None).map(|cpu| Device { cpu: cpu , owed_cycles: 0 })
     }
 
     pub fn new_from_buffer(romdata: Vec<u8>, skip_checksum: bool) -> StrResult<Device> {
         let cart = mbc::get_mbc(romdata, skip_checksum)?;
-        CPU::new(cart, None).map(|cpu| Device { cpu: cpu })
+        CPU::new(cart, None).map(|cpu| Device { cpu: cpu , owed_cycles: 0 })
     }
 
     pub fn new_cgb_from_buffer(romdata: Vec<u8>, skip_checksum: bool) -> StrResult<Device> {
         let cart = mbc::get_mbc(romdata, skip_checksum)?;
-        CPU::new_cgb(cart, None).map(|cpu| Device { cpu: cpu })
+        CPU::new_cgb(cart, None).map(|cpu| Device { cpu: cpu , owed_cycles: 0 })
+    }
+
+    pub fn do_cycle_time(&mut self, secs: f32) {
+        self.owed_cycles += (4194304. * secs) as i32;
+        while self.owed_cycles > 0 {
+            self.owed_cycles -= self.cpu.do_cycle() as i32
+        }
     }
 
     pub fn do_cycle(&mut self) -> u32 {
