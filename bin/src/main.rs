@@ -1,4 +1,4 @@
-#![crate_name = "rboy"]
+#![crate_name = "rboy_bin"]
 
 use rboy::device::Device;
 use std::io::{self, Read};

@@ -1,0 +1,19 @@
+[package]
+name = "rboy-bin"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rboy = { path = "../" }  
+clap = "4"
+cpal = "0.15"
+glium = "0.34"
+winit = "0.29"
+
+[[bin]]
+name = "rboy-bin"
+test = false
+doc = false
+
+[profile.release]
+lto = true
