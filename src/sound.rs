@@ -1,4 +1,5 @@
 use blip_buf::BlipBuf;
+use serde::{Deserialize, Serialize};
 
 const WAVE_PATTERN : [[i32; 8]; 4] = [[-1,-1,-1,-1,1,-1,-1,-1],[-1,-1,-1,-1,1,1,-1,-1],[-1,-1,1,1,1,1,-1,-1],[1,1,1,1,-1,-1,1,1]];
 const CLOCKS_PER_SECOND : u32 = 1 << 22;
@@ -16,6 +17,7 @@ pub trait AudioPlayer : Send {
     fn underflowed(&self) -> bool;
 }
 
+#[derive(Serialize, Deserialize)]
 struct VolumeEnvelope {
     period : u8,
     goes_up : bool,
@@ -78,6 +80,7 @@ impl VolumeEnvelope {
     }
 }
 
+#[derive(Serialize, Deserialize)]
 struct LengthCounter {
     enabled: bool,
     value: u16,

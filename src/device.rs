@@ -6,6 +6,9 @@ use crate::mbc;
 use crate::sound;
 use crate::StrResult;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct Device {
     cpu: CPU<'static>,
 }

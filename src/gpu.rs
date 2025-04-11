@@ -1,18 +1,21 @@
 use std::cmp::Ordering;
 use crate::gbmode::GbMode;
+use serde::{Deserialize,Serialize};
+use serde_big_array::BigArray;
 
 const VRAM_SIZE: usize = 0x4000;
 const VOAM_SIZE: usize = 0xA0;
 pub const SCREEN_W: usize = 160;
 pub const SCREEN_H: usize = 144;
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone,serde::Serialize, serde::Deserialize)]
 enum PrioType {
     Color0,
     PrioFlag,
     Normal,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct GPU {
     mode: u8,
     modeclock: u32,
@@ -42,7 +45,9 @@ pub struct GPU {
     palb: [u8; 4],
     pal0: [u8; 4],
     pal1: [u8; 4],
+    #[serde(with = "BigArray")]
     vram: [u8; VRAM_SIZE],
+    #[serde(with = "BigArray")]
     voam: [u8; VOAM_SIZE],
     cbgpal_inc: bool,
     cbgpal_ind: u8,
@@ -52,6 +57,7 @@ pub struct GPU {
     csprit: [[[u8; 3]; 4]; 8],
     vrambank: usize,
     pub data: Vec<u8>,
+    #[serde(with = "BigArray")]
     bgprio: [PrioType; SCREEN_W],
     pub updated: bool,
     pub interrupt: u8,

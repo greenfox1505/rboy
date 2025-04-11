@@ -4,7 +4,9 @@ use crate::serial::SerialCallback;
 use crate::mmu::MMU;
 use crate::mbc;
 use crate::StrResult;
+use serde::{Deserialize,Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct CPU<'a> {
     reg: Registers,
     pub mmu: MMU<'a>,

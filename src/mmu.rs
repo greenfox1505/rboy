@@ -6,33 +6,42 @@ use crate::sound::Sound;
 use crate::gbmode::{GbMode, GbSpeed};
 use crate::StrResult;
 use crate::mbc;
+use serde::{Deserialize,Serialize};
+use serde_big_array::BigArray;
 
 const WRAM_SIZE: usize = 0x8000;
 const ZRAM_SIZE: usize = 0x7F;
 
 #[derive(PartialEq)]
+#[derive(Serialize, Deserialize)]
 enum DMAType {
     NoDMA,
     GDMA,
     HDMA,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct MMU<'a> {
+    #[serde(with = "BigArray")]
     wram: [u8; WRAM_SIZE],
+    #[serde(with = "BigArray")]
     zram: [u8; ZRAM_SIZE],
     hdma: [u8; 4],
     pub inte: u8,
     pub intf: u8,
+    #[serde(skip_serializing,skip_deserializing)]
     pub serial: Serial<'a>,
     pub timer: Timer,
     pub keypad: Keypad,
     pub gpu: GPU,
+    #[serde(skip_serializing,skip_deserializing)]
     pub sound: Option<Sound>,
     hdma_status: DMAType,
     hdma_src: u16,
     hdma_dst: u16,
     hdma_len: u8,
     wrambank: usize,
+    #[serde(skip_serializing,skip_deserializing)]
     pub mbc: Box<dyn mbc::MBC+'static>,
     pub gbmode: GbMode,
     gbspeed: GbSpeed,
